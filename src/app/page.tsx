@@ -48,7 +48,7 @@ export default function HomePage() {
     <div className="flex flex-col gap-12 md:gap-16">
       <section className="relative text-center rounded-xl bg-card overflow-hidden h-64 md:h-80 flex items-center justify-center">
         <Image
-          src="https://placehold.co/1200x400.png"
+          src="https://i.ibb.co/G4QGwNcy/ice.jpg"
           alt="A delicious-looking ice cream"
           width={1200}
           height={400}
