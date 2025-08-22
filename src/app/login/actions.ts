@@ -1,6 +1,8 @@
 'use server';
 
 import { z } from 'zod';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 
 const loginSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -21,15 +23,39 @@ export async function loginOrSignUp(prevState: any, formData: FormData) {
     };
   }
 
-  // In a real app, you would:
-  // 1. Check if a user with this mobile number exists.
-  // 2. If yes, log them in (e.g., send OTP, create session).
-  // 3. If no, create a new user account.
-  console.log('Login/Signup attempt:', validatedFields.data);
+  const { name, mobile } = validatedFields.data;
 
-  return {
-    success: true,
-    message: `Welcome, ${validatedFields.data.name}! You are now logged in.`,
-    errors: null,
-  };
+  try {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('mobile', '==', mobile));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      // User does not exist, create new user
+      await addDoc(usersRef, {
+        name,
+        mobile,
+        createdAt: new Date(),
+      });
+       return {
+        success: true,
+        message: `Welcome, ${name}! Your account has been created.`,
+        errors: null,
+      };
+    } else {
+      // User exists, log them in
+       return {
+        success: true,
+        message: `Welcome back, ${name}! You are now logged in.`,
+        errors: null,
+      };
+    }
+  } catch (error) {
+    console.error('Firebase error:', error);
+    return {
+        success: false,
+        message: 'An error occurred. Please try again.',
+        errors: null,
+    };
+  }
 }
