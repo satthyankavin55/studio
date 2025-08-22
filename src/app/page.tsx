@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,15 +45,40 @@ const iceCreams = [
 ];
 
 export default function HomePage() {
+  const [seed, setSeed] = useState('');
+
+  // Set initial seed on client-side to avoid hydration mismatch
+  useEffect(() => {
+    setSeed(Math.random().toString());
+  }, []);
+
+  const imageUrl = `https://placehold.co/1200x400.png?seed=${seed}`;
+
   return (
     <div className="flex flex-col gap-12 md:gap-16">
-      <section className="text-center py-16 md:py-24 rounded-xl bg-card">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4 tracking-tight">Scoops of Happiness Await</h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Experience the creamiest, most delightful ice cream made with love and the finest ingredients.
-          </p>
-          <Button size="lg" className="font-bold text-lg py-6 px-8">Explore Flavors</Button>
+      <section className="relative text-center rounded-xl bg-card overflow-hidden h-64 md:h-80 flex items-center justify-center">
+        {seed ? (
+            <Image
+              key={seed}
+              src={imageUrl}
+              alt="A random delicious-looking ice cream"
+              width={1200}
+              height={400}
+              className="w-full h-full object-cover"
+              data-ai-hint="ice cream"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full bg-muted animate-pulse" />
+        )}
+        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
+          <div className="container mx-auto px-4 text-white">
+            <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4 tracking-tight">Scoops of Happiness Await</h1>
+            <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8">
+              Experience the creamiest, most delightful ice cream made with love and the finest ingredients.
+            </p>
+            <Button size="lg" className="font-bold text-lg py-6 px-8">Explore Flavors</Button>
+          </div>
         </div>
       </section>
 
